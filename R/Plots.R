@@ -20,7 +20,7 @@ plot_nodepaths <- function(comdet_path, lambdas, colors = NULL, linetypes = NULL
       colors[memberships == 2] <- colfunc2(sum(memberships ==2))
       colors[memberships == 3] <- colfunc3(sum(memberships ==3)) 
     }else{
-      colors = terrain.colors(N)
+      colors = rainbow(N)
     }
   }
     
@@ -91,6 +91,40 @@ membership_pie_plots <- function(A, Z,  colors = NULL, layoutpos = NULL,
               vertex.pie=values)
               #xlim=c(-0.2,0.2)*3, ylim=c(-0.2,0.2)*3) #manually adjusted
 
+}
+
+#########################################################
+# Network diagram with pie plots colored by community membership - non-overlapping
+# A = network
+# communities = a vector with community memberships from 1 to K
+# colors = community colors
+# layoutpos = positions for layout
+membership_plots <- function(A, communities,  colors = NULL, layoutpos = NULL,
+                                 nodesizes = NULL) {
+  net <- graph.adjacency(A, mode = "undirected", diag = F)
+  K <- length(unique(communities))
+  if(is.null(colors))
+    colors = rainbow(K)
+  if(is.null(layoutpos))
+    layoutpos <- layout.fruchterman.reingold(net)
+  if(is.null(nodesizes)) {
+    degree <- apply(A,1,sum)
+    nodesizes <- 3*(log(degree)+1)
+  }
+  
+  values = lapply(seq_len(nrow(Z)), function(i) Z[i,])
+  shapes = "circle"
+  cols = colors[communities]
+  par(mar=c(0.5,0.5,0.5,0.5))
+  
+  V(net)$pie.color=list(colors)
+  plot.igraph(net, layout = layoutpos,
+              vertex.color = cols,
+              vertex.shape = shapes,
+              vertex.label=NA,
+              vertex.size=nodesizes)
+  #xlim=c(-0.2,0.2)*3, ylim=c(-0.2,0.2)*3) #manually adjusted
+  
 }
 
 gif.membership_pie_plots <- function(A, Zlist, filename = "gifpieplot.gif", colors = NULL, layoutpos = NULL,

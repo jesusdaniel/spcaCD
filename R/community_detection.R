@@ -71,7 +71,7 @@ overlapping_community_detection <- function(A, K, lambda = 0.9, method  = "SPCA_
   Z = (best_spca$Z)*(abs(best_spca$Z)> epsilon)
   theta = apply(Z,1,function(x) (sum(abs(x)^lnorm))^(1/lnorm))
   theta = ifelse(theta==0,1,theta)
-  Z = Z/theta
+  Z = abs(Z)/theta
   return(list(Zest = Z, Zraw = Zraw, theta = theta,
               membership = 1*(Z!=0), Z0 = best_spca$Z_path[[1]], method = method,
               tot_iterations = tot_iterations))
