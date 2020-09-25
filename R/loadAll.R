@@ -6,6 +6,7 @@ source("R/extrafunctions.R")
 source("R/Likelihood.R")
 source("R/matrix_generation.R")
 source("R/Plots.R")
+source("R/Simon-Funk.R")
 source("R/sparsePCA.R")
 source("R/sparsePCA_comdet_path.R")
 
