@@ -1,11 +1,11 @@
 library("MASS")
 
 hard_thresh = function(A, g_threshold){
-  A[abs(A) <= g_threshold] = 0
+  A[(A) <= g_threshold] = 0
   return(A)
 }
 soft_thresh = function(A, g_threshold){
-  return(sign(A)*pmax(abs(A)-g_threshold,0))
+  return(sign(A)*pmax((A)-g_threshold,0))
 }
 
 
@@ -28,7 +28,7 @@ spca_qr <- function(A, K, gamma = 0, lambdavec = rep(1, K), Z0 = NULL, thresh = 
     Y = thresh(as.matrix(U), 0*lambda_mat)
     QR = qr(Y)
     Z <- qr.Q(QR)
-    
+
     iter = iter + 1
     tolerance = tolerance_function(Zest,Z)
     tol_path = c(tol_path, tolerance)
@@ -41,7 +41,7 @@ spca_qr <- function(A, K, gamma = 0, lambdavec = rep(1, K), Z0 = NULL, thresh = 
 }
 
 
-spca_Z <- function(A, K, lambda = 0.9, lnorm = 1, 
+spca_Z <- function(A, K, lambda = 0.9, lnorm = 1,
                    Z0 = NULL, num_iter = 50, TOL = 1e-04, save_path = T,
                    thresh = hard_thresh) {
   #browser()
@@ -50,15 +50,15 @@ spca_Z <- function(A, K, lambda = 0.9, lnorm = 1,
   if(is.null(Z0))
     Z0 = initialization(ncol(A), K)
   Z0 = t(apply(Z0, 1,function(x) x/(sum(abs(x)^lnorm)+1*(sum(abs(x))<1e-16))^lnorm_exp))
-  
+
   Z = Z0                  #initial value
   tolerance = Inf;     iter = 1           #convergence
   tol_path = c();      Z_path = list()    #save path
-  
+
   Zest = Z
   Z_path[[iter]] = Z0
   while(iter <= num_iter & tolerance >= TOL) {
-    # Multiplication  
+    # Multiplication
     U = A %*%Z
     #Column normalization
     V = U%*%diag(apply(Z, 2,function(x) 1/(sum(abs(x)^lnorm)+1*(sum(abs(x))<1e-16))^lnorm_exp))
@@ -82,7 +82,7 @@ spca_Z <- function(A, K, lambda = 0.9, lnorm = 1,
 
 
 
-spca_DCZ <- function(A, K, lambda = 0.9, lnorm = 2, 
+spca_DCZ <- function(A, K, lambda = 0.9, lnorm = 2,
                      Z0 = NULL, num_iter = 50, TOL = 1e-08, save_path = F,
                      thresh = hard_thresh) {
   N = nrow(A)
@@ -94,7 +94,7 @@ spca_DCZ <- function(A, K, lambda = 0.9, lnorm = 2,
   Z = Z0                  #initial value
   tolerance = Inf;     iter = 1           #convergence
   tol_path = c();      Z_path = list()    #save path
-  
+
   Zest = Z
   Z_path[[iter]] = Z0
   while(iter <= num_iter & tolerance >= TOL) {
@@ -116,7 +116,7 @@ spca_DCZ <- function(A, K, lambda = 0.9, lnorm = 2,
               tol_path = tol_path, Z_path = Z_path))
 }
 
-spca_DCZ_inv <- function(A, K, lambda = 0.9, lnorm = 2, 
+spca_DCZ_inv <- function(A, K, lambda = 0.9, lnorm = 2,
                      Z0 = NULL, num_iter = 50, TOL = 1e-08, save_path = F,
                      thresh = hard_thresh) {
   N = nrow(A)
@@ -124,11 +124,11 @@ spca_DCZ_inv <- function(A, K, lambda = 0.9, lnorm = 2,
   if(is.null(Z0))
     Z0 = initialization(ncol(A), K)
   Z0 = apply(Z0, 2,function(x) x/(sum(abs(x)^lnorm)+1*(sum(abs(x))<1e-16))^lnorm_exp)
-  
+
   Z = Z0                  #initial value
   tolerance = Inf;     iter = 1           #convergence
   tol_path = c();      Z_path = list()    #save path
-  
+
   Zest = Z
   Z_path[[iter]] = Z0
   while(iter <= num_iter & tolerance >= TOL) {
@@ -151,21 +151,21 @@ spca_DCZ_inv <- function(A, K, lambda = 0.9, lnorm = 2,
 
 
 spca_eigenbasis <- function(A, K, lambda = 0.3, lnorm = 2,
-                              Z0 = NULL, num_iter=30, TOL = 1e-04, save_path = T, 
+                              Z0 = NULL, num_iter=30, TOL = 1e-04, save_path = T,
                             thresh = hard_thresh) {
   N = nrow(A)
   lnorm_exp = 1/lnorm;
   if(is.null(Z0))
     Z0 = initialization(ncol(A), K)
   Z0 = apply(Z0, 2,function(x) x/(sum(abs(x)^lnorm)+1*(sum(abs(x))<1e-16))^lnorm_exp)
-  
+
   Z = Z0                  #initial value
   tolerance = Inf;     iter = 1           #convergence
   tol_path = c();      Z_path = list()    #save path
-  
+
   Zest = Z
   Z_path[[iter]] = Z0
-  
+
   while(iter <= num_iter & tolerance >= TOL) {
     AZ = A %*%Z
     ZAZ = crossprod(Z, AZ)
